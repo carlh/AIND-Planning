@@ -3,7 +3,7 @@ from aimacode.planning import Action
 from aimacode.search import (
     Node, Problem,
 )
-from aimacode.utils import expr
+from aimacode.utils import expr, subexpressions
 from lp_utils import (
     FluentState, encode_state, decode_state,
 )
@@ -222,8 +222,13 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
+        decoded = decode_state(node.state, self.state_map)
+        state_sentence = decoded.sentence().args
+        subs = list(subexpressions(state_sentence))[0]
+        for goal in self.goal:
+            if goal not in subs:
+                count += 1
         return count
 
 
@@ -280,7 +285,7 @@ def air_cargo_p2() -> AirCargoProblem:
         expr('At(C3, ATL)'),
         expr('At(P1, SFO)'),
         expr('At(P2, JFK)'),
-        expr('At(P3, SFO)')
+        expr('At(P3, ATL)')
     ]
     neg = [
         expr('At(C1, JFK)'),
