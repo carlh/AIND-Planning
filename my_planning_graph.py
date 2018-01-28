@@ -450,8 +450,8 @@ class PlanningGraph():
         :return: bool
         """
 
-        for node in node_a1.prenodes:
-            for node2 in node_a2.prenodes:
+        for node in node_a1.parents:
+            for node2 in node_a2.parents:
                 if node.is_mutex(node2):
                     return True
         return False
