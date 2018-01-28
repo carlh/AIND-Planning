@@ -424,7 +424,17 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         """
-        # TODO test for Interference between nodes
+
+        for effnode in node_a1.effnodes:
+            for prenode in node_a2.prenodes:
+                if self.negation_mutex(effnode, prenode):
+                    return True
+
+        for effnode in node_a2.effnodes:
+            for prenode in node_a1.prenodes:
+                if self.negation_mutex(effnode, prenode):
+                    return True
+
         return False
 
     def competing_needs_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
@@ -496,7 +506,25 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
-        return node_s1.is_mutex(node_s2)
+        s1_actions = set()
+        s2_actions = set()
+        for action in self.all_actions:
+            a_node = PgNode_a(action)
+            for effnode in a_node.effnodes:
+                if node_s1 == effnode:
+                    s1_actions.add(a_node)
+                if node_s2 == effnode:
+                    s2_actions.add(a_node)
+
+        for s1_action in s1_actions:
+            for s2_action in s2_actions:
+                if not s1_action.is_mutex(s2_action):
+                    #  There is a pair of actions that are not mutex, so these states are not mutex
+                    return False
+
+        #  We didn't find any actions that are not mutually exclusive, so these states are inconsistent
+        return True
+
 
 
     def h_levelsum(self) -> int:
