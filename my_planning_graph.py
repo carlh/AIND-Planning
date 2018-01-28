@@ -508,22 +508,10 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
-        s1_actions = set()
-        s2_actions = set()
-        for action in self.all_actions:
-            a_node = PgNode_a(action)
-            for effnode in a_node.effnodes:
-                if node_s1 == effnode:
-                    s1_actions.add(a_node)
-                if node_s2 == effnode:
-                    s2_actions.add(a_node)
-
-        for s1_action in s1_actions:
-            for s2_action in s2_actions:
+        for s1_action in node_s1.parents:
+            for s2_action in node_s2.parents:
                 if not s1_action.is_mutex(s2_action):
-                    #  There is a pair of actions that are not mutex, so these states are not mutex
                     return False
-
         #  We didn't find any actions that are not mutually exclusive, so these states are inconsistent
         return True
 
